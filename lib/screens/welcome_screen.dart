@@ -29,7 +29,7 @@ class WelcomeScreen extends StatelessWidget {
                   const Text(
                     'Insumo App',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -45,15 +45,16 @@ class WelcomeScreen extends StatelessWidget {
                     child: const Text(
                       'Iniciar',
                       style: TextStyle(
-                        color: Colors.white, // Color blanco para el texto
+                        color: Colors.white,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 50),
                   const Text(
                     '© 2024 Telmex. Todos los derechos reservados.',
                     style: TextStyle(
                       color: Colors.black,
+                      fontSize: 12,
                     ),
                   ),
                 ],

@@ -55,6 +55,7 @@ flutter:
   assets:
     - assets/images/fondo_telmex.png
     - assets/images/Telmex_logo.png
+    - assets/images/fondo_drawer.jpg
 
 
   # The following line ensures that the Material Icons font is

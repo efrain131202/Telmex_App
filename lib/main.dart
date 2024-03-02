@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:telmexinsumo/screens/welcome_screen.dart';
+import 'package:telmexinsumo/screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/welcome',
       routes: {
         '/welcome': (context) => const WelcomeScreen(),
+        '/home': (context) => const HomeScreen(),
       },
     );
   }

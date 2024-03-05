@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'exit_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -8,7 +9,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 2,
+        elevation: 0,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -27,14 +28,14 @@ class HomeScreen extends StatelessWidget {
             ),
             color: Colors.red,
             onPressed: () {
-              // Acción de salir
+              showExitConfirmationDialog(context);
             },
           ),
           const SizedBox(width: 16),
           const CircleAvatar(
             backgroundColor: Colors.black,
             backgroundImage: AssetImage(
-              'assets/images/fondo_telmex.png',
+              'assets/images/Telmex_logo.png',
             ),
           ),
           const SizedBox(width: 16),

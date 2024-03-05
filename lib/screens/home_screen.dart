@@ -26,13 +26,15 @@ class HomeScreen extends StatelessWidget {
               color: Colors.black,
             ),
             color: Colors.red,
-            onPressed: () {},
+            onPressed: () {
+              // Acción de salir
+            },
           ),
           const SizedBox(width: 16),
           const CircleAvatar(
             backgroundColor: Colors.black,
             backgroundImage: AssetImage(
-              'assets/images/Telmex_logo.png',
+              'assets/images/fondo_telmex.png',
             ),
           ),
           const SizedBox(width: 16),
@@ -77,11 +79,6 @@ class HomeScreen extends StatelessWidget {
             _buildDrawerIconButton(
               Icons.save_rounded,
               'Guardar',
-              () {},
-            ),
-            _buildDrawerIconButton(
-              Icons.extension_rounded,
-              'localizar',
               () {},
             ),
             _buildDrawerIconButton(

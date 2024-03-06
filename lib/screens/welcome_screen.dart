@@ -31,6 +31,45 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     super.dispose();
   }
 
+  // Método para solicitar permiso de almacenamiento
+  Future<void> _requestStoragePermission() async {
+    final status = await Permission.storage
+        .request(); // Solicita el permiso de almacenamiento
+    if (status.isGranted) {
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context,
+          '/home'); // Navega a la siguiente pantalla si el permiso es concedido
+    } else {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Permiso necesario',
+              style: TextStyle(color: Colors.black),
+            ),
+            content: const Text(
+              'Para continuar, necesitamos acceso al almacenamiento del dispositivo.',
+              style: TextStyle(color: Colors.black),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'Aceptar',
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +80,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             height: MediaQuery.of(context).size.height,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/fondo_telmex.png'),
+                image: AssetImage('assets/images/textura.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -55,22 +94,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       'assets/images/Telmex_logo.png',
                       width: MediaQuery.of(context).size.width * 0.5,
                     ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Insumo App',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 100),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/home');
+                        _requestStoragePermission(); // Llama al método para solicitar el permiso
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
+                        elevation: 5,
                       ),
                       child: const Text(
                         'Iniciar',
@@ -79,12 +110,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         ),
                       ),
                     ),
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 15),
                     const Text(
                       '© 2024 Telmex. Todos los derechos reservados.',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 12,
+                        fontSize: 10,
                       ),
                     ),
                   ],
@@ -96,4 +127,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       ),
     );
   }
+}
+
+class Permission {
+  // ignore: prefer_typing_uninitialized_variables
+  static var storage;
 }

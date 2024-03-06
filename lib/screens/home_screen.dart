@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'exit_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

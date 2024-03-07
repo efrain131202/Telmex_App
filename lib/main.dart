@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Telmex Insumo_App',
+      title: 'TelmexEffi',
       theme: ThemeData(
         brightness: Brightness.light,
       ),

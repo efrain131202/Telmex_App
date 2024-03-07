@@ -88,7 +88,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/images/Telmex_logo.png',
+                      'assets/images/Logo_telmexEffi.png',
                       width: MediaQuery.of(context).size.width * 0.5,
                     ),
                     const SizedBox(height: 100),

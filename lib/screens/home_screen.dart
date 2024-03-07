@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
           const CircleAvatar(
             backgroundColor: Colors.black,
             backgroundImage: AssetImage(
-              'assets/images/Telmex_logo.png',
+              'assets/images/Icono_TelmexEffi.png',
             ),
           ),
           const SizedBox(width: 16),

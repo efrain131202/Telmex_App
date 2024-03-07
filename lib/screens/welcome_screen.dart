@@ -31,14 +31,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     super.dispose();
   }
 
-  // Método para solicitar permiso de almacenamiento
   Future<void> _requestStoragePermission() async {
-    final status = await Permission.storage
-        .request(); // Solicita el permiso de almacenamiento
+    final status = await Permission.storage.request();
     if (status.isGranted) {
       // ignore: use_build_context_synchronously
-      Navigator.pushReplacementNamed(context,
-          '/home'); // Navega a la siguiente pantalla si el permiso es concedido
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       showDialog(
         // ignore: use_build_context_synchronously
@@ -97,7 +94,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     const SizedBox(height: 100),
                     ElevatedButton(
                       onPressed: () {
-                        _requestStoragePermission(); // Llama al método para solicitar el permiso
+                        _requestStoragePermission();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
@@ -111,9 +108,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       ),
                     ),
                     const SizedBox(height: 15),
-                    const Text(
-                      '© 2024 Telmex. Todos los derechos reservados.',
-                      style: TextStyle(
+                    Text(
+                      '© ${DateTime.now().year} Telmex. Todos los derechos reservados.',
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 10,
                       ),

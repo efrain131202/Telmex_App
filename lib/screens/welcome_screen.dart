@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -32,7 +33,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   Future<void> _requestStoragePermission() async {
-    final status = await Permission.storage.request();
+    final status = await Permission.requestStoragePermission();
     if (status.isGranted) {
       // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, '/home');
@@ -89,9 +90,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   children: [
                     Image.asset(
                       'assets/images/Logo_telmexEffi.png',
-                      width: MediaQuery.of(context).size.width * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.36,
                     ),
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 15),
                     ElevatedButton(
                       onPressed: () {
                         _requestStoragePermission();
@@ -104,6 +105,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         'Iniciar',
                         style: TextStyle(
                           color: Colors.white,
+                          fontSize: 15,
                         ),
                       ),
                     ),
@@ -112,7 +114,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       '© ${DateTime.now().year} Telmex. Todos los derechos reservados.',
                       style: const TextStyle(
                         color: Colors.black,
-                        fontSize: 10,
+                        fontSize: 8,
                       ),
                     ),
                   ],
@@ -129,4 +131,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 class Permission {
   // ignore: prefer_typing_uninitialized_variables
   static var storage;
+
+  static Future<PermissionStatus> requestStoragePermission() async {
+    final status = await Permission.storage.request();
+    return status;
+  }
+
+  static Future<bool> checkStoragePermission() async {
+    final status = await Permission.storage.status;
+    return status.isGranted;
+  }
 }

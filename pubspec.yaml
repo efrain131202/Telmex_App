@@ -58,6 +58,10 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+    - family: MadimiOne
+      fonts:
+        - asset: assets/fonts/MadimiOne-Regular.ttf
   assets:
     - assets/images/Telmex_logo.png
     - assets/images/fondo_drawer.jpg

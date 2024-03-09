@@ -26,6 +26,9 @@ class MyApp extends StatelessWidget {
         '/welcome': (context) => const WelcomeScreen(),
         '/home': (context) => const HomeScreen(),
       },
+      theme: ThemeData(
+        fontFamily: 'MadimiOne',
+      ),
     );
   }
 }

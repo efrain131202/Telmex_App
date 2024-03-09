@@ -51,12 +51,12 @@ class AboutDialogScreen extends StatelessWidget {
                 'TelmexEffi es una aplicación para gestionar archivos Excel de forma sencilla. '
                 'Importa, edita y exporta tus datos con facilidad. Ideal para personal '
                 'que necesitan manipular datos en hojas de cálculo.',
-                style: TextStyle(fontSize: 15),
+                style: TextStyle(fontSize: 13),
                 textAlign: TextAlign.center,
               ),
               const Text(
                 'Versión: 1.0.0',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 13),
               ),
               const SizedBox(height: 20),
               const Text(

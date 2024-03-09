@@ -57,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Telmex',
+                'TelmexEffi',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 30,

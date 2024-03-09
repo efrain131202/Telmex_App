@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:telmexinsumo/screens/about_dialog.dart';
 import 'exit_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -87,7 +88,13 @@ class HomeScreen extends StatelessWidget {
             _buildDrawerIconButton(
               Icons.info_rounded,
               'Acerca de',
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AboutDialogScreen()),
+                );
+              },
             ),
           ],
         ),

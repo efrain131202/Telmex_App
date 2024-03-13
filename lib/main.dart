@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:telmexinsumo/screens/welcome_screen.dart';
 import 'package:telmexinsumo/screens/home_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
-void main() async {
-  runApp(const MyApp());
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+void main() {
   runApp(const MyApp());
 }
 

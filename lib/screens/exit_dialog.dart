@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void showExitConfirmationDialog(BuildContext context) {
   showDialog(
@@ -19,7 +20,7 @@ void showExitConfirmationDialog(BuildContext context) {
                 '¿Salir de la Aplicación?',
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -31,7 +32,7 @@ void showExitConfirmationDialog(BuildContext context) {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 16,
+                  fontSize: 15,
                 ),
               ),
             ),
@@ -45,17 +46,20 @@ void showExitConfirmationDialog(BuildContext context) {
                     'Cancelar',
                     style: TextStyle(
                       color: Colors.blue,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                   ),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                    SystemNavigator.pop(); // Esto cierra la aplicación
+                  },
                   child: const Text(
                     'Salir',
                     style: TextStyle(
                       color: Colors.red,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                   ),
                 ),
@@ -65,9 +69,5 @@ void showExitConfirmationDialog(BuildContext context) {
         ),
       );
     },
-  ).then((confirmed) {
-    if (confirmed != null && confirmed) {
-      Navigator.of(context).pop();
-    }
-  });
+  );
 }

@@ -11,7 +11,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _storagePermissionGranted = false;
-  bool _cloudStorageEnabled = false;
 
   @override
   void initState() {
@@ -36,7 +35,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
               'Permisos',
@@ -58,55 +58,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               inactiveTrackColor: Colors.grey.shade300,
             ),
             const SizedBox(height: 16.0),
-            const Text(
-              'Almacenamiento en la nube',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
+            Expanded(
+              child: Center(
+                child: Image.asset(
+                  'assets/images/image_config.png',
+                  fit: BoxFit.contain,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                ),
               ),
-            ),
-            SwitchListTile(
-              title: const Text('Guardar archivos en la nube'),
-              value: _cloudStorageEnabled,
-              onChanged: (value) {
-                setState(() {
-                  _cloudStorageEnabled = value;
-                });
-                if (value) {
-                  _showCloudStorageDialog(context);
-                }
-              },
-              activeColor: Colors.blue,
-              inactiveTrackColor: Colors.grey.shade300,
-            ),
-            const SizedBox(height: 16.0),
-            const Text(
-              'Ayuda',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
-              ),
-            ),
-            ListTile(
-              title: const Text('Contactar soporte'),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                _showHelpDialog(context);
-              },
             ),
           ],
         ),
       ),
     );
-  }
-
-  void _showCloudStorageDialog(BuildContext context) {
-    // Muestra un cuadro de diálogo o una pantalla para seleccionar archivos
-    // y cargarlos a la nube utilizando la API del servicio de almacenamiento
-  }
-
-  void _showHelpDialog(BuildContext context) {
-    // Muestra un cuadro de diálogo o una pantalla con información de ayuda,
-    // preguntas frecuentes o un formulario de contacto
   }
 }

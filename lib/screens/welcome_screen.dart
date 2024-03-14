@@ -11,7 +11,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _fadeInAnimation;
+  late Animation<double> _opacityAnimation;
 
   @override
   void initState() {
@@ -20,8 +20,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       vsync: this,
       duration: const Duration(milliseconds: 2000),
     );
-    _fadeInAnimation =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
     _animationController.repeat(reverse: true);
     _animationController.forward();
   }
@@ -41,45 +44,45 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         },
         child: Stack(
           children: [
-            SingleChildScrollView(
+            Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/textura.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Center(
               child: FadeTransition(
-                opacity: _fadeInAnimation,
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/textura.png'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/Logo_telmexEffi.png',
-                            width: MediaQuery.of(context).size.width * 0.36,
-                          ),
-                        ],
-                      ),
-                    ),
+                opacity: _opacityAnimation,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.36,
+                  child: Image.asset(
+                    'assets/images/Logo_telmexEffi.png',
                   ),
                 ),
               ),
             ),
             Align(
               alignment: Alignment.bottomCenter,
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 50.0),
-                child: const Text(
-                  'Presione la pantalla para continuar',
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 15,
-                  ),
-                ),
+              child: AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _opacityAnimation.value,
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 50.0),
+                      child: const Text(
+                        'Presione la pantalla para continuar',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],

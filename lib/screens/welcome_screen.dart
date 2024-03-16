@@ -12,6 +12,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
+  late Animation<double> _bounceAnimation;
+
+  static const double _logoWidth = 0.36;
+  static const double _bottomPadding = 50.0;
+  static const String _continueText = 'Presione la pantalla para continuar';
 
   @override
   void initState() {
@@ -23,6 +28,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
     _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _bounceAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.bounceOut,
     );
 
     _animationController.repeat(reverse: true);
@@ -57,7 +67,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               child: FadeTransition(
                 opacity: _opacityAnimation,
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.36,
+                  width: MediaQuery.of(context).size.width * _logoWidth,
                   child: Image.asset(
                     'assets/images/Logo_telmexEffi.png',
                   ),
@@ -67,18 +77,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             Align(
               alignment: Alignment.bottomCenter,
               child: AnimatedBuilder(
-                animation: _animationController,
+                animation: _bounceAnimation,
                 builder: (context, child) {
-                  return Opacity(
-                    opacity: _opacityAnimation.value,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 50.0),
-                      child: const Text(
-                        'Presione la pantalla para continuar',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                        ),
+                  return Padding(
+                    padding: EdgeInsets.only(
+                        bottom: _bottomPadding * _bounceAnimation.value),
+                    child: const Text(
+                      _continueText,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
                       ),
                     ),
                   );

@@ -29,10 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 _scaffoldKey.currentState?.openDrawer();
               },
             ),
-            title: const Text(
-              'TelmexEffi',
-              style: TextStyle(color: Colors.blue),
-            ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.logout_rounded, color: Colors.black),

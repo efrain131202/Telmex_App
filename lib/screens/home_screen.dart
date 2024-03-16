@@ -21,8 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.notes_rounded, color: Colors.black),
               onPressed: () {

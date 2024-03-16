@@ -62,7 +62,6 @@ flutter:
       fonts:
         - asset: assets/fonts/MadimiOne-Regular.ttf
   assets:
-    - assets/images/Telmex_logo.png
     - assets/images/fondo_drawer.jpg
     - assets/images/textura.png
     - assets/images/Logo_telmexEffi.png

@@ -5,9 +5,9 @@
 
 
     <application
-        android:label="telmexinsumo"
+        android:label="telmexEffi"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+         android:icon="@mipmap/logotelmexeffi">
         <activity
             android:name=".MainActivity"
             android:exported="true"

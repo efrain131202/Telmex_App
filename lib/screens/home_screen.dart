@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:telmexinsumo/screens/about_dialog.dart';
+import 'about_dialog.dart';
 import 'exit_dialog.dart';
 import 'settings_screen.dart';
 

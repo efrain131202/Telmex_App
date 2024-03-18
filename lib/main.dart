@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:telmexinsumo/screens/welcome_screen.dart';
-import 'package:telmexinsumo/screens/home_screen.dart';
+import 'package:telmexeffi/screens/welcome_screen.dart';
+import 'package:telmexeffi/screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());

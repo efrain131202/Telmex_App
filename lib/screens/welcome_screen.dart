@@ -17,6 +17,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   static const double _logoWidth = 0.36;
   static const double _bottomPadding = 50.0;
   static const String _continueText = 'Presione la pantalla para continuar';
+  static const Color _backgroundColor = Color.fromARGB(255, 222, 250, 255);
 
   @override
   void initState() {
@@ -48,21 +49,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _backgroundColor,
       body: GestureDetector(
         onTap: () {
           Navigator.pushReplacementNamed(context, '/home');
         },
         child: Stack(
           children: [
-            Container(
-              height: MediaQuery.of(context).size.height,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/textura.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
             Center(
               child: FadeTransition(
                 opacity: _opacityAnimation,

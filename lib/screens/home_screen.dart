@@ -17,10 +17,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       key: _scaffoldKey,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            backgroundColor: Colors.white,
             leading: IconButton(
               icon: const Icon(Icons.notes_rounded, color: Colors.black),
               onPressed: () {
@@ -58,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         child: Drawer(
+          backgroundColor: Colors.white,
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[

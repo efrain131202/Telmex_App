@@ -5,7 +5,7 @@
 
 
     <application
-        android:label="telmexEffi"
+        android:label="TelmexEffi"
         android:name="${applicationName}"
          android:icon="@mipmap/logotelmexeffi">
         <activity

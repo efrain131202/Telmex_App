@@ -9,7 +9,6 @@ void showExitConfirmationDialog(BuildContext context) {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         ),
-        elevation: 5,
         backgroundColor: Colors.white,
         child: Column(
           mainAxisSize: MainAxisSize.min,

@@ -48,13 +48,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _backgroundColor,
-      body: GestureDetector(
-        onTap: () {
-          Navigator.pushReplacementNamed(context, '/home');
-        },
-        child: Stack(
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushReplacementNamed(context, '/home');
+      },
+      child: Scaffold(
+        backgroundColor: _backgroundColor,
+        body: Stack(
           children: [
             Center(
               child: FadeTransition(

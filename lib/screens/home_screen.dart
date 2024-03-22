@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'import_excel.dart';
+import 'excel_data_viewer.dart';
 import 'about_dialog.dart';
 import 'exit_dialog.dart';
 import 'settings_screen.dart';
@@ -13,45 +15,35 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _importExcelService = ImportExcelService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       key: _scaffoldKey,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Colors.white,
-            leading: IconButton(
-              icon: const Icon(Icons.notes_rounded, color: Colors.black),
-              onPressed: () {
-                _scaffoldKey.currentState?.openDrawer();
-              },
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.logout_rounded, color: Colors.black),
-                onPressed: () {
-                  showExitConfirmationDialog(context);
-                },
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.settings_rounded, color: Colors.black),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SettingsScreen(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(width: 8),
-            ],
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_rounded, color: Colors.black),
+            onPressed: () {
+              showExitConfirmationDialog(context);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_rounded, color: Colors.black),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
           ),
         ],
+      ),
+      body: ExcelDataViewer(
+        excelData: _importExcelService.excelData,
       ),
       drawer: GestureDetector(
         onHorizontalDragUpdate: (details) {
@@ -60,7 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         child: Drawer(
-          backgroundColor: Colors.white,
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
@@ -83,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildDrawerIconButton(
                 Icons.arrow_circle_up_rounded,
                 'Importar',
-                () {},
+                _importExcelFile,
               ),
               _buildDrawerIconButton(
                 Icons.arrow_circle_down_rounded,
@@ -129,5 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
       title: Text(label),
       onTap: onPressed,
     );
+  }
+
+  Future<void> _importExcelFile() async {
+    await _importExcelService.importExcelFile();
+    setState(() {});
   }
 }

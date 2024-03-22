@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   image: DecorationImage(
                     image: AssetImage('assets/images/fondo_drawer.jpg'),
                     fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(Colors.blue, BlendMode.color),
                   ),
                 ),
                 child: Text(

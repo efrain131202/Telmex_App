@@ -6,7 +6,8 @@ import 'exit_dialog.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  // ignore: use_super_parameters
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -43,7 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: ExcelDataViewer(
-        excelData: _importExcelService.excelData,
+        excelSheets:
+            _importExcelService.excelData, // Cambiar excelData a excelSheets
       ),
       drawer: GestureDetector(
         onHorizontalDragUpdate: (details) {

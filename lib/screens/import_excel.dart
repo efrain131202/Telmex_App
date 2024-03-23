@@ -4,7 +4,8 @@ import 'package:spreadsheet_decoder/spreadsheet_decoder.dart';
 
 class ImportExcelService {
   File? _excelFile;
-  List<List<dynamic>>? _excelData;
+  List<List<List<dynamic>>>?
+      _excelData; // Cambiado a una lista de listas de listas de dinámicos
 
   Future<void> importExcelFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -23,7 +24,13 @@ class ImportExcelService {
       try {
         final spreadsheetDecoder =
             SpreadsheetDecoder.decodeBytes(_excelFile!.readAsBytesSync());
-        _excelData = spreadsheetDecoder.tables.values.first.rows;
+
+        _excelData =
+            []; // Inicializar la lista de listas de listas de dinámicos
+
+        for (var table in spreadsheetDecoder.tables.values) {
+          _excelData!.add(table.rows); // Agregar los datos de cada hoja
+        }
       } catch (e) {
         // Manejo de errores
         // ignore: avoid_print
@@ -32,5 +39,6 @@ class ImportExcelService {
     }
   }
 
-  List<List<dynamic>>? get excelData => _excelData;
+  List<List<List<dynamic>>>? get excelData =>
+      _excelData; // Cambiado el tipo de retorno
 }

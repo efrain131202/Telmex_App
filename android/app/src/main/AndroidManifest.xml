@@ -7,7 +7,7 @@
     <application
         android:label="TelmexEffi"
         android:name="${applicationName}"
-         android:icon="@mipmap/logotelmexeffi">
+         android:icon="@mipmap/logotelmexffi">
         <activity
             android:name=".MainActivity"
             android:exported="true"

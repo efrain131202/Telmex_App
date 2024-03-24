@@ -14,10 +14,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   late Animation<double> _opacityAnimation;
   late Animation<double> _bounceAnimation;
 
-  static const double _logoWidth = 0.36;
+  static const double _logoWidth = 0.70;
   static const double _bottomPadding = 50.0;
   static const String _continueText = 'Presione la pantalla para continuar';
-  static const Color _backgroundColor = Color.fromARGB(255, 222, 250, 255);
+  static const Color _backgroundColor = Colors.blue;
 
   @override
   void initState() {
@@ -78,7 +78,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     child: const Text(
                       _continueText,
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 15,
                       ),
                     ),

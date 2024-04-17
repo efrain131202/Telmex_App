@@ -12,12 +12,12 @@ class ExcelDataViewer extends StatefulWidget {
 class _ExcelDataViewerState extends State<ExcelDataViewer>
     with SingleTickerProviderStateMixin {
   int _selectedSheetIndex = 0;
-  bool _showColumnHeaders = true;
-  bool _showRowHeaders = true;
   double _scale = 1.0;
 
   late AnimationController _animationController;
   late Animation<double> _animation;
+
+  String _searchTerm = '';
 
   @override
   void initState() {
@@ -96,56 +96,25 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              DropdownButton<int>(
-                value: _selectedSheetIndex,
-                items: List.generate(
-                  widget.excelSheets!.length,
-                  (index) => DropdownMenuItem(
-                    value: index,
-                    child: Text(
-                      'Hoja ${index + 1}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+          DropdownButton<int>(
+            value: _selectedSheetIndex,
+            items: List.generate(
+              widget.excelSheets!.length,
+              (index) => DropdownMenuItem(
+                value: index,
+                child: Text(
+                  'Hoja ${index + 1}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedSheetIndex = value!;
-                  });
-                },
               ),
-              const SizedBox(width: 8.0),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _showColumnHeaders = !_showColumnHeaders;
-                  });
-                },
-                icon: Icon(
-                  _showColumnHeaders
-                      ? Icons.view_column_outlined
-                      : Icons.view_column_rounded,
-                  color: Colors.black,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _showRowHeaders = !_showRowHeaders;
-                  });
-                },
-                icon: Icon(
-                  _showRowHeaders
-                      ? Icons.view_stream_outlined
-                      : Icons.view_stream_rounded,
-                  color: Colors.black,
-                ),
-              ),
-            ],
+            ),
+            onChanged: (value) {
+              setState(() {
+                _selectedSheetIndex = value!;
+              });
+            },
           ),
           Row(
             children: [
@@ -180,12 +149,33 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
               ),
             ],
           ),
+          Expanded(
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Buscar...',
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchTerm = value;
+                });
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildTable(BuildContext context, List<List<dynamic>> sheet) {
+    List<List<dynamic>> filteredRows = sheet.where((row) {
+      for (var cell in row) {
+        if (cell != null && cell.toString().contains(_searchTerm)) {
+          return true;
+        }
+      }
+      return false;
+    }).toList();
+
     return Table(
       defaultColumnWidth: const IntrinsicColumnWidth(),
       border: TableBorder.all(
@@ -194,36 +184,31 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
         width: 1,
       ),
       children: [
-        if (_showColumnHeaders)
-          TableRow(
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-            ),
-            children: [
-              if (_showRowHeaders)
-                const TableCell(
-                  child: SizedBox(),
-                ),
-              for (int columnIndex = 0;
-                  columnIndex < sheet[0].length;
-                  columnIndex++)
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Columna $columnIndex',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                      textAlign: TextAlign.center,
+        TableRow(
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+          ),
+          children: [
+            for (int columnIndex = 0;
+                columnIndex < sheet[0].length;
+                columnIndex++)
+              TableCell(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Columna $columnIndex',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-            ],
-          ),
-        for (int rowIndex = 0; rowIndex < sheet.length; rowIndex++)
+              ),
+          ],
+        ),
+        for (int rowIndex = 0; rowIndex < filteredRows.length; rowIndex++)
           TableRow(
             decoration: BoxDecoration(
               color: rowIndex % 2 == 0 ? Colors.grey.shade200 : Colors.white,
@@ -232,32 +217,17 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
               ),
             ),
             children: [
-              if (_showRowHeaders)
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Fila $rowIndex',
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
               for (int columnIndex = 0;
-                  columnIndex < sheet[rowIndex].length;
+                  columnIndex < filteredRows[rowIndex].length;
                   columnIndex++)
                 TableCell(
                   verticalAlignment: TableCellVerticalAlignment.middle,
                   child: Container(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      sheet[rowIndex][columnIndex] == null
+                      filteredRows[rowIndex][columnIndex] == null
                           ? ''
-                          : sheet[rowIndex][columnIndex].toString(),
+                          : filteredRows[rowIndex][columnIndex].toString(),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 15,

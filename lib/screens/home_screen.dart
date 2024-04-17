@@ -44,8 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: ExcelDataViewer(
-        excelSheets:
-            _importExcelService.excelData, // Cambiar excelData a excelSheets
+        excelSheets: _importExcelService.excelData,
       ),
       drawer: GestureDetector(
         onHorizontalDragUpdate: (details) {

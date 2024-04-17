@@ -36,6 +36,5 @@ class ImportExcelService {
     }
   }
 
-  List<List<List<dynamic>>>? get excelData =>
-      _excelData; // Cambiado el tipo de retorno
+  List<List<List<dynamic>>>? get excelData => _excelData;
 }

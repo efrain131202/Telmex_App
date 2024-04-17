@@ -52,7 +52,7 @@ void showExitConfirmationDialog(BuildContext context) {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(true);
-                    SystemNavigator.pop(); // Esto cierra la aplicación
+                    SystemNavigator.pop();
                   },
                   child: const Text(
                     'Salir',

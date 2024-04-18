@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'message_widget.dart';
 
 class ExcelDataViewer extends StatefulWidget {
   final List<List<List<dynamic>>>? excelSheets;
@@ -76,17 +77,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
             ],
           )
         : Center(
-            child: FadeTransition(
-              opacity: _animation,
-              child: const Text(
-                'No se han importado datos',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
+            child: MessageWidget(animation: _animation),
           );
   }
 

@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:spreadsheet_decoder/spreadsheet_decoder.dart';
+import 'package:logger/logger.dart';
 
 class ImportExcelService {
+  final _logger = Logger();
   File? _excelFile;
   List<List<List<dynamic>>>? _excelData;
 
@@ -21,17 +23,17 @@ class ImportExcelService {
   Future<void> _loadExcelData() async {
     if (_excelFile != null) {
       try {
-        final spreadsheetDecoder =
-            SpreadsheetDecoder.decodeBytes(_excelFile!.readAsBytesSync());
+        final bytes = await _excelFile!.readAsBytes();
+        final spreadsheetDecoder = SpreadsheetDecoder.decodeBytes(bytes);
 
         _excelData = [];
 
         for (var table in spreadsheetDecoder.tables.values) {
           _excelData!.add(table.rows);
         }
-      } catch (e) {
-        // ignore: avoid_print
-        print('Error al cargar datos de Excel: $e');
+      } catch (e, stackTrace) {
+        _logger.e('Error al cargar datos de Excel',
+            error: e, stackTrace: stackTrace);
       }
     }
   }

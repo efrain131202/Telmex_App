@@ -6,12 +6,10 @@ import 'exit_dialog.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  // ignore: use_super_parameters
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {

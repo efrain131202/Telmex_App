@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class AboutDialogScreen extends StatelessWidget {
   const AboutDialogScreen({super.key});
@@ -122,20 +125,17 @@ class AboutDialogScreen extends StatelessWidget {
 
   static Future<void> _launchURL(String url) async {
     try {
-      // ignore: deprecated_member_use
-      if (await canLaunch(url)) {
-        // ignore: deprecated_member_use
-        await launch(
-          url,
-          forceSafariVC: false,
-          forceWebView: false,
+      if (await canLaunchUrl(Uri.parse(url))) {
+        await launchUrl(
+          // Cambio aquí
+          Uri.parse(url),
+          mode: LaunchMode.externalApplication,
         );
       } else {
         throw 'Could not launch $url';
       }
     } catch (e) {
-      // ignore: avoid_print
-      print('Error al lanzar la URL: $e');
+      logger.e('Error al lanzar la URL: $e');
     }
   }
 }

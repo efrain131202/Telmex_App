@@ -106,6 +106,8 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   }
 
   Widget _buildToolbar(List<List<dynamic>> currentSheet) {
+    List<dynamic> firstColumnValues =
+        currentSheet.map((row) => row[0] ?? '').toList();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -143,18 +145,16 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                     value: null,
                     child: Text('Todas las filas'),
                   ),
-                  ...List.generate(
-                    currentSheet.length,
-                    (index) => DropdownMenuItem(
+                  for (int index = 0; index < firstColumnValues.length; index++)
+                    DropdownMenuItem(
                       value: index,
                       child: Text(
-                        'Fila ${index + 1}',
+                        firstColumnValues[index].toString(),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ),
                 ],
                 onChanged: (value) {
                   setState(() {

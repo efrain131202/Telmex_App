@@ -13,6 +13,7 @@ class ExcelDataViewer extends StatefulWidget {
 class _ExcelDataViewerState extends State<ExcelDataViewer>
     with SingleTickerProviderStateMixin {
   int _selectedSheetIndex = 0;
+  int? _selectedRowIndex;
   double _scale = 1.0;
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -71,7 +72,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
     return currentSheet != null
         ? Column(
             children: [
-              _buildToolbar(),
+              _buildToolbar(currentSheet),
               const Divider(height: 1),
               Expanded(
                 child: SingleChildScrollView(
@@ -104,7 +105,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
           );
   }
 
-  Widget _buildToolbar() {
+  Widget _buildToolbar(List<List<dynamic>> currentSheet) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -130,6 +131,34 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                 onChanged: (value) {
                   setState(() {
                     _selectedSheetIndex = value!;
+                    _selectedRowIndex = null;
+                  });
+                },
+              ),
+              DropdownButton<int?>(
+                value: _selectedRowIndex,
+                hint: const Text('Seleccionar fila'),
+                items: [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text('Todas las filas'),
+                  ),
+                  ...List.generate(
+                    currentSheet.length,
+                    (index) => DropdownMenuItem(
+                      value: index,
+                      child: Text(
+                        'Fila ${index + 1}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedRowIndex = value;
                   });
                 },
               ),
@@ -240,14 +269,16 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   }
 
   Widget _buildTable(BuildContext context, List<List<dynamic>> sheet) {
-    List<List<dynamic>> filteredRows = sheet.where((row) {
-      for (var cell in row) {
-        if (cell != null && cell.toString().contains(_searchTerm)) {
-          return true;
-        }
-      }
-      return false;
-    }).toList();
+    List<List<dynamic>> filteredRows = _selectedRowIndex != null
+        ? [sheet[_selectedRowIndex!]]
+        : sheet.where((row) {
+            for (var cell in row) {
+              if (cell != null && cell.toString().contains(_searchTerm)) {
+                return true;
+              }
+            }
+            return false;
+          }).toList();
 
     return Table(
       defaultColumnWidth: const IntrinsicColumnWidth(),

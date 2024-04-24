@@ -127,7 +127,6 @@ class AboutDialogScreen extends StatelessWidget {
     try {
       if (await canLaunchUrl(Uri.parse(url))) {
         await launchUrl(
-          // Cambio aquí
           Uri.parse(url),
           mode: LaunchMode.externalApplication,
         );

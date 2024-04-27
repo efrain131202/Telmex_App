@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'custom_error_screen.dart';
 import 'message_widget.dart';
+import 'package:logger/logger.dart';
 
 class ExcelDataViewer extends StatefulWidget {
   final List<List<List<dynamic>>>? excelSheets;
@@ -20,6 +22,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   String _searchTerm = '';
   List<String> _suggestions = [];
   bool _showSuggestions = false;
+  final logger = Logger();
 
   @override
   void initState() {
@@ -69,40 +72,47 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   Widget build(BuildContext context) {
     List<List<dynamic>>? currentSheet =
         widget.excelSheets?[_selectedSheetIndex];
-    return currentSheet != null
-        ? Column(
-            children: [
-              _buildToolbar(currentSheet),
-              const Divider(height: 1),
-              Expanded(
+    try {
+      if (currentSheet != null) {
+        return Column(
+          children: [
+            _buildToolbar(currentSheet),
+            const Divider(height: 1),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
                 child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Transform.scale(
-                      scale: _scale,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: _buildTable(context, currentSheet),
+                  scrollDirection: Axis.horizontal,
+                  child: Transform.scale(
+                    scale: _scale,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
+                      child: _buildTable(context, currentSheet),
                     ),
                   ),
                 ),
               ),
-            ],
-          )
-        : Center(
-            child: MessageWidget(animation: _animation),
-          );
+            ),
+          ],
+        );
+      } else {
+        return Center(
+          child: MessageWidget(animation: _animation),
+        );
+      }
+    } catch (e) {
+      logger.e("Error: $e");
+      return const CustomErrorScreen();
+    }
   }
 
   Widget _buildToolbar(List<List<dynamic>> currentSheet) {

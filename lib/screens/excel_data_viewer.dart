@@ -123,10 +123,13 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                   (index) => DropdownMenuItem(
                     value: index,
                     child: Text(
-                      'Hoja ${index + 1}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      widget.excelSheets![index][0][0] != null
+                          ? widget.excelSheets![index][0][0].toString().length >
+                                  10
+                              ? '${widget.excelSheets![index][0][0].toString().substring(0, 10)}...'
+                              : widget.excelSheets![index][0][0].toString()
+                          : 'Hoja ${index + 1}',
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
@@ -149,10 +152,10 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                     DropdownMenuItem(
                       value: index,
                       child: Text(
-                        firstColumnValues[index].toString(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        firstColumnValues[index].toString().length > 10
+                            ? '${firstColumnValues[index].toString().substring(0, 10)}...'
+                            : firstColumnValues[index].toString(),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                 ],

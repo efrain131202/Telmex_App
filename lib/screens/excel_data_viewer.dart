@@ -22,6 +22,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   String _searchTerm = '';
   List<String> _suggestions = [];
   bool _showSuggestions = false;
+  bool _editMode = false;
   final logger = Logger();
 
   @override
@@ -206,6 +207,22 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                       color: Colors.black,
                     ),
                   ),
+                  ClipOval(
+                    child: Material(
+                      color: _editMode ? Colors.red : Colors.blue,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _editMode = !_editMode;
+                          });
+                        },
+                        icon: Icon(
+                          _editMode ? Icons.edit_rounded : Icons.edit_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -339,15 +356,59 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                   columnIndex++)
                 TableCell(
                   verticalAlignment: TableCellVerticalAlignment.middle,
-                  child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      filteredRows[rowIndex][columnIndex] == null
-                          ? ''
-                          : filteredRows[rowIndex][columnIndex].toString(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 15,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (_editMode) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            String currentValue = filteredRows[rowIndex]
+                                        [columnIndex] !=
+                                    null
+                                ? filteredRows[rowIndex][columnIndex].toString()
+                                : '';
+                            return AlertDialog(
+                              title: const Text('Editar celda'),
+                              content: TextField(
+                                controller:
+                                    TextEditingController(text: currentValue),
+                                onChanged: (value) {
+                                  currentValue = value;
+                                },
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      filteredRows[rowIndex][columnIndex] =
+                                          currentValue;
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Guardar'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        filteredRows[rowIndex][columnIndex] == null
+                            ? ''
+                            : filteredRows[rowIndex][columnIndex].toString(),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),

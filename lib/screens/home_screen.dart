@@ -82,11 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 () {},
               ),
               _buildDrawerIconButton(
-                Icons.edit_note_rounded,
-                'Editar',
-                () {},
-              ),
-              _buildDrawerIconButton(
                 Icons.save_rounded,
                 'Guardar',
                 () {},

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:telmexeffi/screens/about_dialog.dart';
+import 'package:telmexeffi/screens/exit_dialog.dart';
 import 'import_excel.dart';
 import 'excel_data_viewer.dart';
-import 'about_dialog.dart';
-import 'exit_dialog.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,17 +13,30 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _importExcelService = ImportExcelService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
+        title: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AboutDialogScreen(),
+              ),
+            );
+          },
+          child: const Text(
+            'TelmexEffi',
+            style: TextStyle(
+                color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Colors.black),
+            icon: const Icon(Icons.exit_to_app_rounded, color: Colors.black),
             onPressed: () {
               showExitConfirmationDialog(context);
             },
@@ -40,80 +53,23 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ],
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Divider(
+            height: 0.2,
+            thickness: 0.2,
+            color: Colors.grey,
+          ),
+        ),
       ),
       body: ExcelDataViewer(
         excelSheets: _importExcelService.excelData,
       ),
-      drawer: GestureDetector(
-        onHorizontalDragUpdate: (details) {
-          if (details.delta.dx > 0) {
-            _scaffoldKey.currentState?.openDrawer();
-          }
-        },
-        child: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/fondo_drawer.jpg'),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(Colors.blue, BlendMode.color),
-                  ),
-                ),
-                child: Text(
-                  'TelmexEffi',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              _buildDrawerIconButton(
-                Icons.arrow_circle_up_rounded,
-                'Importar',
-                _importExcelFile,
-              ),
-              _buildDrawerIconButton(
-                Icons.arrow_circle_down_rounded,
-                'Exportar',
-                () {},
-              ),
-              _buildDrawerIconButton(
-                Icons.save_rounded,
-                'Guardar',
-                () {},
-              ),
-              _buildDrawerIconButton(
-                Icons.info_rounded,
-                'Acerca de',
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AboutDialogScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        onPressed: _importExcelFile,
+        child: const Icon(Icons.file_upload_rounded, color: Colors.white),
       ),
-    );
-  }
-
-  Widget _buildDrawerIconButton(
-    IconData icon,
-    String label,
-    VoidCallback onPressed,
-  ) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(label),
-      onTap: onPressed,
     );
   }
 

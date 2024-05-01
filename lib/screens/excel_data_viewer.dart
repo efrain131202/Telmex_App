@@ -340,6 +340,10 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                   ),
                 ),
               ),
+            if (_editMode) // Agregar columna si está en modo edición
+              const TableCell(
+                child: SizedBox.shrink(),
+              ),
           ],
         ),
         for (int rowIndex = 0; rowIndex < filteredRows.length; rowIndex++)
@@ -357,65 +361,205 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                 TableCell(
                   verticalAlignment: TableCellVerticalAlignment.middle,
                   child: GestureDetector(
-                    onTap: () {
+                    onLongPress: () {
                       if (_editMode) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            String currentValue = filteredRows[rowIndex]
-                                        [columnIndex] !=
-                                    null
-                                ? filteredRows[rowIndex][columnIndex].toString()
-                                : '';
-                            return AlertDialog(
-                              title: const Text('Editar celda'),
-                              content: TextField(
-                                controller:
-                                    TextEditingController(text: currentValue),
-                                onChanged: (value) {
-                                  currentValue = value;
-                                },
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Cancelar'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      filteredRows[rowIndex][columnIndex] =
-                                          currentValue;
-                                    });
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Guardar'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                        _showAddOptions(context, rowIndex, columnIndex);
                       }
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        filteredRows[rowIndex][columnIndex] == null
-                            ? ''
-                            : filteredRows[rowIndex][columnIndex].toString(),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
+                    child: _editMode
+                        ? _buildEditableCell(
+                            filteredRows, rowIndex, columnIndex)
+                        : _buildReadOnlyCell(
+                            filteredRows, rowIndex, columnIndex),
                   ),
+                ),
+              if (_editMode) // Agregar fila si está en modo edición
+                const TableCell(
+                  child: SizedBox.shrink(),
+                ),
+            ],
+          ),
+        if (_editMode) // Agregar fila al final si está en modo edición
+          TableRow(
+            decoration: const BoxDecoration(
+              color: Colors.transparent,
+            ),
+            children: [
+              for (int columnIndex = 0;
+                  columnIndex <= sheet[0].length;
+                  columnIndex++)
+                const TableCell(
+                  child: SizedBox.shrink(),
                 ),
             ],
           ),
       ],
+    );
+  }
+
+  void _showAddOptions(BuildContext context, int rowIndex, int columnIndex) {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final offset = overlay.localToGlobal(Offset.zero);
+
+    final List<PopupMenuEntry<String>> menuItems = [
+      const PopupMenuItem<String>(
+        value: 'addRowAbove',
+        child: ListTile(
+          leading: Icon(Icons.arrow_upward_rounded),
+          title: Text('Agregar fila arriba'),
+        ),
+      ),
+      const PopupMenuItem<String>(
+        value: 'addRowBelow',
+        child: ListTile(
+          leading: Icon(Icons.arrow_downward_rounded),
+          title: Text('Agregar fila abajo'),
+        ),
+      ),
+      const PopupMenuItem<String>(
+        value: 'addColumnLeft',
+        child: ListTile(
+          leading: Icon(Icons.arrow_back_rounded),
+          title: Text('Agregar columna a la izquierda'),
+        ),
+      ),
+      const PopupMenuItem<String>(
+        value: 'addColumnRight',
+        child: ListTile(
+          leading: Icon(Icons.arrow_forward_rounded),
+          title: Text('Agregar columna a la derecha'),
+        ),
+      ),
+    ];
+
+    showMenu<String>(
+      context: context,
+      position:
+          RelativeRect.fromLTRB(offset.dx, offset.dy, offset.dx, offset.dy),
+      items: menuItems,
+    ).then((value) {
+      if (value != null) {
+        switch (value) {
+          case 'addRowAbove':
+            _addRowAbove(rowIndex);
+            break;
+          case 'addRowBelow':
+            _addRowBelow(rowIndex);
+            break;
+          case 'addColumnLeft':
+            _addColumnLeft(columnIndex);
+            break;
+          case 'addColumnRight':
+            _addColumnRight(columnIndex);
+            break;
+        }
+      }
+    });
+  }
+
+  void _addRowAbove(int rowIndex) {
+    setState(() {
+      // Inserta una nueva fila arriba de la fila actual
+      widget.excelSheets![_selectedSheetIndex].insert(rowIndex,
+          List.filled(widget.excelSheets![_selectedSheetIndex][0].length, ''));
+    });
+  }
+
+  void _addRowBelow(int rowIndex) {
+    setState(() {
+      // Inserta una nueva fila debajo de la fila actual
+      widget.excelSheets![_selectedSheetIndex].insert(rowIndex + 1,
+          List.filled(widget.excelSheets![_selectedSheetIndex][0].length, ''));
+    });
+  }
+
+  void _addColumnLeft(int columnIndex) {
+    setState(() {
+      // Inserta una nueva columna a la izquierda de la columna actual
+      for (int i = 0;
+          i < widget.excelSheets![_selectedSheetIndex].length;
+          i++) {
+        widget.excelSheets![_selectedSheetIndex][i].insert(columnIndex, '');
+      }
+    });
+  }
+
+  void _addColumnRight(int columnIndex) {
+    setState(() {
+      // Inserta una nueva columna a la derecha de la columna actual
+      for (int i = 0;
+          i < widget.excelSheets![_selectedSheetIndex].length;
+          i++) {
+        widget.excelSheets![_selectedSheetIndex][i].insert(columnIndex + 1, '');
+      }
+    });
+  }
+
+  Widget _buildEditableCell(
+      List<List<dynamic>> filteredRows, int rowIndex, int columnIndex) {
+    final currentValue = filteredRows[rowIndex][columnIndex]?.toString() ?? '';
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: TextEditingController(text: currentValue),
+                  onChanged: (value) {
+                    setState(() {
+                      filteredRows[rowIndex][columnIndex] = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Editar celda',
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue,
+                        width: 2.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          currentValue,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 15,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyCell(
+      List<List<dynamic>> filteredRows, int rowIndex, int columnIndex) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        filteredRows[rowIndex][columnIndex]?.toString() ?? '',
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 15,
+        ),
+      ),
     );
   }
 }

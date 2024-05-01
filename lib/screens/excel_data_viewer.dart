@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'custom_error_screen.dart';
 import 'message_widget.dart';
 import 'package:logger/logger.dart';
+import 'cell_options.dart';
 
 class ExcelDataViewer extends StatefulWidget {
   final List<List<List<dynamic>>>? excelSheets;
@@ -340,7 +341,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                   ),
                 ),
               ),
-            if (_editMode) // Agregar columna si está en modo edición
+            if (_editMode)
               const TableCell(
                 child: SizedBox.shrink(),
               ),
@@ -373,13 +374,13 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                             filteredRows, rowIndex, columnIndex),
                   ),
                 ),
-              if (_editMode) // Agregar fila si está en modo edición
+              if (_editMode)
                 const TableCell(
                   child: SizedBox.shrink(),
                 ),
             ],
           ),
-        if (_editMode) // Agregar fila al final si está en modo edición
+        if (_editMode)
           TableRow(
             decoration: const BoxDecoration(
               color: Colors.transparent,
@@ -460,7 +461,6 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
 
   void _addRowAbove(int rowIndex) {
     setState(() {
-      // Inserta una nueva fila arriba de la fila actual
       widget.excelSheets![_selectedSheetIndex].insert(rowIndex,
           List.filled(widget.excelSheets![_selectedSheetIndex][0].length, ''));
     });
@@ -468,7 +468,6 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
 
   void _addRowBelow(int rowIndex) {
     setState(() {
-      // Inserta una nueva fila debajo de la fila actual
       widget.excelSheets![_selectedSheetIndex].insert(rowIndex + 1,
           List.filled(widget.excelSheets![_selectedSheetIndex][0].length, ''));
     });
@@ -476,7 +475,6 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
 
   void _addColumnLeft(int columnIndex) {
     setState(() {
-      // Inserta una nueva columna a la izquierda de la columna actual
       for (int i = 0;
           i < widget.excelSheets![_selectedSheetIndex].length;
           i++) {
@@ -487,7 +485,6 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
 
   void _addColumnRight(int columnIndex) {
     setState(() {
-      // Inserta una nueva columna a la derecha de la columna actual
       for (int i = 0;
           i < widget.excelSheets![_selectedSheetIndex].length;
           i++) {
@@ -536,6 +533,9 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
           },
         );
       },
+      onLongPress: () {
+        _showCellOptions(context, rowIndex, columnIndex);
+      },
       child: Container(
         padding: const EdgeInsets.all(8.0),
         child: Text(
@@ -546,6 +546,24 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
           ),
         ),
       ),
+    );
+  }
+
+  void _showCellOptions(BuildContext context, int rowIndex, int columnIndex) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return CellOptions(
+          onAddRowAbove: _addRowAbove,
+          onAddRowBelow: _addRowBelow,
+          onAddColumnLeft: _addColumnLeft,
+          onAddColumnRight: _addColumnRight,
+          onDeleteRow: _deleteRow,
+          onDeleteColumn: _deleteColumn,
+          rowIndex: rowIndex,
+          columnIndex: columnIndex,
+        );
+      },
     );
   }
 
@@ -561,5 +579,21 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
         ),
       ),
     );
+  }
+
+  void _deleteRow(int rowIndex) {
+    setState(() {
+      widget.excelSheets![_selectedSheetIndex].removeAt(rowIndex);
+    });
+  }
+
+  void _deleteColumn(int columnIndex) {
+    setState(() {
+      for (int i = 0;
+          i < widget.excelSheets![_selectedSheetIndex].length;
+          i++) {
+        widget.excelSheets![_selectedSheetIndex][i].removeAt(columnIndex);
+      }
+    });
   }
 }

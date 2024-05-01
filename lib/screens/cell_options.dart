@@ -30,42 +30,42 @@ class CellOptions extends StatelessWidget {
           const PopupMenuItem<String>(
             value: 'addRowAbove',
             child: ListTile(
-              leading: Icon(Icons.arrow_upward, color: Colors.blue),
+              leading: Icon(Icons.arrow_upward_rounded, color: Colors.blue),
               title: Text('Agregar fila arriba'),
             ),
           ),
           const PopupMenuItem<String>(
             value: 'addRowBelow',
             child: ListTile(
-              leading: Icon(Icons.arrow_downward, color: Colors.blue),
+              leading: Icon(Icons.arrow_downward_rounded, color: Colors.blue),
               title: Text('Agregar fila abajo'),
             ),
           ),
           const PopupMenuItem<String>(
             value: 'addColumnLeft',
             child: ListTile(
-              leading: Icon(Icons.arrow_back, color: Colors.blue),
+              leading: Icon(Icons.arrow_back_rounded, color: Colors.blue),
               title: Text('Agregar columna a la izquierda'),
             ),
           ),
           const PopupMenuItem<String>(
             value: 'addColumnRight',
             child: ListTile(
-              leading: Icon(Icons.arrow_forward, color: Colors.blue),
+              leading: Icon(Icons.arrow_forward_rounded, color: Colors.blue),
               title: Text('Agregar columna a la derecha'),
             ),
           ),
           const PopupMenuItem<String>(
             value: 'deleteRow',
             child: ListTile(
-              leading: Icon(Icons.delete, color: Colors.red),
+              leading: Icon(Icons.delete_rounded, color: Colors.red),
               title: Text('Borrar fila', style: TextStyle(color: Colors.red)),
             ),
           ),
           const PopupMenuItem<String>(
             value: 'deleteColumn',
             child: ListTile(
-              leading: Icon(Icons.delete, color: Colors.red),
+              leading: Icon(Icons.delete_rounded, color: Colors.red),
               title:
                   Text('Borrar columna', style: TextStyle(color: Colors.red)),
             ),

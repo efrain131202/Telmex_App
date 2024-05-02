@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:telmexeffi/screens/about_dialog.dart';
 import 'package:telmexeffi/screens/exit_dialog.dart';
 import 'import_excel.dart';
@@ -14,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _importExcelService = ImportExcelService();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: const Text(
             'TelmexEffi',
             style: TextStyle(
-                color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
+              color: Colors.blue,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         actions: [
@@ -62,8 +67,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: ExcelDataViewer(
-        excelSheets: _importExcelService.excelData,
+      body: Stack(
+        children: [
+          ExcelDataViewer(
+            excelSheets: _importExcelService.excelData,
+          ),
+          if (_isLoading)
+            const Center(
+              child: SpinKitFadingCircle(
+                color: Colors.blue,
+                size: 50.0,
+              ),
+            ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
@@ -74,7 +90,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _importExcelFile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     await _importExcelService.importExcelFile();
-    setState(() {});
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 }

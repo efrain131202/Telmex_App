@@ -17,7 +17,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
     with SingleTickerProviderStateMixin {
   int _selectedSheetIndex = 0;
   int? _selectedRowIndex;
-  double _scale = 1.0;
+  final double _scale = 1.0;
   late AnimationController _animationController;
   late Animation<double> _animation;
   String _searchTerm = '';
@@ -179,35 +179,37 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
               ),
               Row(
                 children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _scale = _scale - 0.1;
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.zoom_out_rounded,
+                  ClipOval(
+                    child: Material(
                       color: Colors.black,
+                      child: IconButton(
+                        onPressed: () {
+                          // Lógica para guardar
+                        },
+                        icon: const Icon(
+                          Icons.save_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                  Text(
-                    '${(_scale * 100).toStringAsFixed(0)}%',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(width: 8),
+                  ClipOval(
+                    child: Material(
+                      color: Colors.blue,
+                      child: IconButton(
+                        onPressed: () {
+                          // Lógica para exportar
+                        },
+                        icon: const Icon(
+                          Icons.file_download_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _scale = _scale + 0.1;
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.zoom_in_rounded,
-                      color: Colors.black,
-                    ),
-                  ),
+                  const SizedBox(width: 8),
+                  // Botón de edición
                   ClipOval(
                     child: Material(
                       color: _editMode ? Colors.red : Colors.blue,
@@ -217,8 +219,8 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                             _editMode = !_editMode;
                           });
                         },
-                        icon: Icon(
-                          _editMode ? Icons.edit_rounded : Icons.edit_rounded,
+                        icon: const Icon(
+                          Icons.edit_rounded,
                           color: Colors.white,
                         ),
                       ),

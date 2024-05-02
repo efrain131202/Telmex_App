@@ -25,7 +25,6 @@ class ImportExcelService {
       try {
         final bytes = await _excelFile!.readAsBytes();
         final spreadsheetDecoder = SpreadsheetDecoder.decodeBytes(bytes);
-
         _excelData = [];
 
         for (var table in spreadsheetDecoder.tables.values) {

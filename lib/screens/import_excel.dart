@@ -7,13 +7,13 @@ class ImportExcelService {
   final _logger = Logger();
   File? _excelFile;
   List<List<List<dynamic>>>? _excelData;
+  List<String>? _sheetNames;
 
   Future<void> importExcelFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['xlsx', 'xls'],
     );
-
     if (result != null) {
       _excelFile = File(result.files.single.path!);
       await _loadExcelData();
@@ -26,9 +26,10 @@ class ImportExcelService {
         final bytes = await _excelFile!.readAsBytes();
         final spreadsheetDecoder = SpreadsheetDecoder.decodeBytes(bytes);
         _excelData = [];
-
+        _sheetNames = [];
         for (var table in spreadsheetDecoder.tables.values) {
           _excelData!.add(table.rows);
+          _sheetNames!.add(table.name); // Agregamos el nombre de la hoja
         }
       } catch (e, stackTrace) {
         _logger.e('Error al cargar datos de Excel',
@@ -38,4 +39,6 @@ class ImportExcelService {
   }
 
   List<List<List<dynamic>>>? get excelData => _excelData;
+  List<String>? get sheetNames =>
+      _sheetNames; // Agregamos un getter para los nombres de las hojas
 }

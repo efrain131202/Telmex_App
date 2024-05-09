@@ -91,7 +91,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
+                            color: Colors.white.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
                             offset: const Offset(0, 3),
@@ -134,15 +134,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                   widget.excelSheets!.length,
                   (index) => DropdownMenuItem(
                     value: index,
-                    child: Text(
-                      widget.excelSheets![index][0][0] != null
-                          ? widget.excelSheets![index][0][0].toString().length >
-                                  10
-                              ? '${widget.excelSheets![index][0][0].toString().substring(0, 10)}...'
-                              : widget.excelSheets![index][0][0].toString()
-                          : 'Hoja ${index + 1}',
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    child: Text('Hoja ${index + 1}'),
                   ),
                 ),
                 onChanged: (value) {
@@ -183,9 +175,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                     child: Material(
                       color: Colors.black,
                       child: IconButton(
-                        onPressed: () {
-                          // Lógica para guardar
-                        },
+                        onPressed: () {},
                         icon: const Icon(
                           Icons.save_rounded,
                           color: Colors.white,
@@ -209,7 +199,6 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                     ),
                   ),
                   const SizedBox(width: 8),
-                  // Botón de edición
                   ClipOval(
                     child: Material(
                       color: _editMode ? Colors.red : Colors.blue,
@@ -303,7 +292,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
 
   Widget _buildTable(BuildContext context, List<List<dynamic>> sheet) {
     List<List<dynamic>> filteredRows = _selectedRowIndex != null
-        ? [sheet[_selectedRowIndex!]]
+        ? [sheet[0]] + [sheet[_selectedRowIndex!]]
         : sheet.where((row) {
             for (var cell in row) {
               if (cell != null && cell.toString().contains(_searchTerm)) {
@@ -313,90 +302,76 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
             return false;
           }).toList();
 
-    return Table(
-      defaultColumnWidth: const IntrinsicColumnWidth(),
-      border: TableBorder.all(
-        color: Colors.blue.shade300,
-        style: BorderStyle.solid,
-        width: 1,
-      ),
-      children: [
-        TableRow(
-          decoration: const BoxDecoration(
-            color: Colors.blue,
-          ),
-          children: [
-            for (int columnIndex = 0;
-                columnIndex < sheet[0].length;
-                columnIndex++)
-              TableCell(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Columna $columnIndex',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            if (_editMode)
-              const TableCell(
-                child: SizedBox.shrink(),
-              ),
-          ],
-        ),
-        for (int rowIndex = 0; rowIndex < filteredRows.length; rowIndex++)
-          TableRow(
-            decoration: BoxDecoration(
-              color: rowIndex % 2 == 0 ? Colors.grey.shade200 : Colors.white,
-              border: Border.all(
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Table(
+              defaultColumnWidth: const IntrinsicColumnWidth(),
+              border: TableBorder.all(
                 color: Colors.blue.shade300,
+                style: BorderStyle.solid,
+                width: 1,
               ),
-            ),
-            children: [
-              for (int columnIndex = 0;
-                  columnIndex < filteredRows[rowIndex].length;
-                  columnIndex++)
-                TableCell(
-                  verticalAlignment: TableCellVerticalAlignment.middle,
-                  child: GestureDetector(
-                    onLongPress: () {
-                      if (_editMode) {
-                        _showAddOptions(context, rowIndex, columnIndex);
-                      }
-                    },
-                    child: _editMode
-                        ? _buildEditableCell(
-                            filteredRows, rowIndex, columnIndex)
-                        : _buildReadOnlyCell(
-                            filteredRows, rowIndex, columnIndex),
+              children: [
+                for (int rowIndex = 0;
+                    rowIndex < filteredRows.length;
+                    rowIndex++)
+                  TableRow(
+                    decoration: BoxDecoration(
+                      color: rowIndex % 2 == 0
+                          ? Colors.grey.shade200
+                          : Colors.white,
+                      border: Border.all(
+                        color: Colors.blue.shade300,
+                      ),
+                    ),
+                    children: [
+                      for (int columnIndex = 0;
+                          columnIndex < filteredRows[rowIndex].length;
+                          columnIndex++)
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: GestureDetector(
+                            onLongPress: () {
+                              if (_editMode) {
+                                _showAddOptions(context, rowIndex, columnIndex);
+                              }
+                            },
+                            child: _editMode
+                                ? _buildEditableCell(
+                                    filteredRows, rowIndex, columnIndex)
+                                : _buildReadOnlyCell(
+                                    filteredRows, rowIndex, columnIndex),
+                          ),
+                        ),
+                      if (_editMode)
+                        const TableCell(
+                          child: SizedBox.shrink(),
+                        ),
+                    ],
                   ),
-                ),
-              if (_editMode)
-                const TableCell(
-                  child: SizedBox.shrink(),
-                ),
-            ],
-          ),
-        if (_editMode)
-          TableRow(
-            decoration: const BoxDecoration(
-              color: Colors.transparent,
+                if (_editMode)
+                  TableRow(
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    children: [
+                      for (int columnIndex = 0;
+                          columnIndex <= sheet[0].length;
+                          columnIndex++)
+                        const TableCell(
+                          child: SizedBox.shrink(),
+                        ),
+                    ],
+                  ),
+              ],
             ),
-            children: [
-              for (int columnIndex = 0;
-                  columnIndex <= sheet[0].length;
-                  columnIndex++)
-                const TableCell(
-                  child: SizedBox.shrink(),
-                ),
-            ],
           ),
-      ],
+        ],
+      ),
     );
   }
 

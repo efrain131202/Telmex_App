@@ -302,10 +302,10 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
     List<List<dynamic>> filteredRows = [];
 
     if (_selectedRowIndex != null) {
-      filteredRows.add(sheet[0]); // Agregar siempre la primera fila
+      filteredRows.add(sheet[0]);
       filteredRows.add(sheet[_selectedRowIndex!]);
     } else {
-      filteredRows.add(sheet[0]); // Agregar siempre la primera fila
+      filteredRows.add(sheet[0]);
       filteredRows.addAll(sheet.where((row) {
         for (var cell in row) {
           if (cell != null && cell.toString().contains(_searchTerm)) {
@@ -339,8 +339,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                     child: Text(
                       'Columna $columnIndex',
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                         fontSize: 15,
                       ),
                       textAlign: TextAlign.center,
@@ -356,7 +355,9 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
         for (int rowIndex = 0; rowIndex < filteredRows.length; rowIndex++)
           TableRow(
             decoration: BoxDecoration(
-              color: rowIndex % 2 == 0 ? Colors.grey.shade200 : Colors.white,
+              color: rowIndex == 0
+                  ? Colors.blue
+                  : (rowIndex % 2 == 0 ? Colors.grey.shade200 : Colors.white),
               border: Border.all(
                 color: Colors.blue.shade300,
               ),
@@ -484,7 +485,10 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
       for (int i = 0;
           i < widget.excelSheets![_selectedSheetIndex].length;
           i++) {
-        widget.excelSheets![_selectedSheetIndex][i].insert(columnIndex, '');
+        List<dynamic> newRow =
+            List.from(widget.excelSheets![_selectedSheetIndex][i]);
+        newRow.insert(columnIndex, '');
+        widget.excelSheets![_selectedSheetIndex][i] = newRow;
       }
     });
   }
@@ -494,7 +498,10 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
       for (int i = 0;
           i < widget.excelSheets![_selectedSheetIndex].length;
           i++) {
-        widget.excelSheets![_selectedSheetIndex][i].insert(columnIndex + 1, '');
+        List<dynamic> newRow =
+            List.from(widget.excelSheets![_selectedSheetIndex][i]);
+        newRow.insert(columnIndex + 1, '');
+        widget.excelSheets![_selectedSheetIndex][i] = newRow;
       }
     });
   }

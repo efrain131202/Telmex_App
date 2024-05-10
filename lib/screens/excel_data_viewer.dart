@@ -299,16 +299,22 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   }
 
   Widget _buildTable(BuildContext context, List<List<dynamic>> sheet) {
-    List<List<dynamic>> filteredRows = _selectedRowIndex != null
-        ? [sheet[_selectedRowIndex!]]
-        : sheet.where((row) {
-            for (var cell in row) {
-              if (cell != null && cell.toString().contains(_searchTerm)) {
-                return true;
-              }
-            }
-            return false;
-          }).toList();
+    List<List<dynamic>> filteredRows = [];
+
+    if (_selectedRowIndex != null) {
+      filteredRows.add(sheet[0]); // Agregar siempre la primera fila
+      filteredRows.add(sheet[_selectedRowIndex!]);
+    } else {
+      filteredRows.add(sheet[0]); // Agregar siempre la primera fila
+      filteredRows.addAll(sheet.where((row) {
+        for (var cell in row) {
+          if (cell != null && cell.toString().contains(_searchTerm)) {
+            return true;
+          }
+        }
+        return false;
+      }).toList());
+    }
 
     return Table(
       defaultColumnWidth: const IntrinsicColumnWidth(),

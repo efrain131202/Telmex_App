@@ -1,8 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'custom_error_screen.dart';
 import 'message_widget.dart';
 import 'package:logger/logger.dart';
 import 'cell_options.dart';
+import 'dart:io';
+import 'package:excel/excel.dart' hide Border, BorderStyle;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ExcelDataViewer extends StatefulWidget {
   final List<List<List<dynamic>>>? excelSheets;
@@ -25,6 +30,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   bool _showSuggestions = false;
   bool _editMode = false;
   final logger = Logger();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -45,6 +51,118 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveToFile() async {
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      String? savePath = await _selectSavePath();
+      if (savePath != null) {
+        final outputPath = '$savePath/archivo_guardado.xlsx';
+
+        final excel = _createExcel();
+        if (excel.sheets.isEmpty) {
+          logger.w('No hay datos para guardar.');
+          return;
+        }
+
+        final excelBytes = await _encodeExcel(excel);
+        if (excelBytes == null || excelBytes.isEmpty) {
+          logger.w('Error al codificar los datos de Excel.');
+          return;
+        }
+
+        await _writeToFile(outputPath, excelBytes);
+        logger.i('Archivo guardado exitosamente en: $outputPath');
+      }
+    } catch (e, stackTrace) {
+      logger.e('Error al guardar el archivo de Excel',
+          error: e, stackTrace: stackTrace);
+    } finally {
+      setState(() {
+        _isSaving = false;
+      });
+    }
+  }
+
+  Excel _createExcel() {
+    final excel = Excel.createExcel();
+
+    if (widget.excelSheets != null) {
+      for (int sheetIndex = 0;
+          sheetIndex < widget.excelSheets!.length;
+          sheetIndex++) {
+        final sheet = widget.excelSheets![sheetIndex];
+        bool hasData = false;
+
+        for (int rowIndex = 0; rowIndex < sheet.length; rowIndex++) {
+          final row = sheet[rowIndex];
+          if (row.isNotEmpty) {
+            for (int columnIndex = 0; columnIndex < row.length; columnIndex++) {
+              if (row[columnIndex] != null) {
+                hasData = true;
+                break;
+              }
+            }
+            if (hasData) {
+              break;
+            }
+          }
+        }
+
+        if (hasData) {
+          final sheetName = widget.excelSheets![sheetIndex][0][0] != null
+              ? widget.excelSheets![sheetIndex][0][0].toString()
+              : 'Hoja${sheetIndex + 1}';
+          final excelSheet = excel[sheetName];
+
+          for (int rowIndex = 0; rowIndex < sheet.length; rowIndex++) {
+            final row = sheet[rowIndex];
+            if (row.isNotEmpty) {
+              final cellValues = row
+                  .map((dynamic value) =>
+                      value != null ? TextCellValue(value.toString()) : null)
+                  .toList();
+              excelSheet.insertRowIterables(cellValues, rowIndex);
+            }
+          }
+        } else {
+          continue;
+        }
+      }
+    }
+
+    return excel;
+  }
+
+  Future<String?> _selectSavePath() async {
+    if (await Permission.storage.request().isGranted) {
+      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+      if (selectedDirectory != null) {
+        return selectedDirectory;
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Se requiere el permiso de almacenamiento'),
+          ),
+        );
+      }
+    }
+    return null;
+  }
+
+  Future<List<int>?> _encodeExcel(Excel excel) async {
+    return await compute((Excel excel) => excel.encode(), excel);
+  }
+
+  Future<void> _writeToFile(String outputPath, List<int> excelBytes) async {
+    final file = File(outputPath);
+    await file.writeAsBytes(excelBytes);
   }
 
   void _updateSuggestions(String value) {
@@ -76,34 +194,45 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
         widget.excelSheets?[_selectedSheetIndex];
     try {
       if (currentSheet != null) {
-        return Column(
+        return Stack(
           children: [
-            _buildToolbar(currentSheet),
-            const Divider(height: 1),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Transform.scale(
-                    scale: _scale,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
+            Column(
+              children: [
+                _buildToolbar(currentSheet),
+                const Divider(height: 1),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Transform.scale(
+                        scale: _scale,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
-                        ],
+                          child: _buildTable(context, currentSheet),
+                        ),
                       ),
-                      child: _buildTable(context, currentSheet),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
+            if (_isSaving)
+              Container(
+                color: Colors.black54,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
           ],
         );
       } else {
@@ -183,24 +312,11 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                     child: Material(
                       color: Colors.black,
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: _isSaving
+                            ? null
+                            : _saveToFile, // LOgica para guardar
                         icon: const Icon(
                           Icons.save_rounded,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ClipOval(
-                    child: Material(
-                      color: Colors.blue,
-                      child: IconButton(
-                        onPressed: () {
-                          // Lógica para exportar
-                        },
-                        icon: const Icon(
-                          Icons.file_download_rounded,
                           color: Colors.white,
                         ),
                       ),
@@ -230,69 +346,52 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
           const SizedBox(height: 8),
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Icon(Icons.search_rounded, color: Colors.black),
-                ),
-                Expanded(
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: 'Buscar...',
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 12),
-                    ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
                     onChanged: (value) {
                       setState(() {
                         _searchTerm = value;
-                      });
-                      _updateSuggestions(value);
-                    },
-                  ),
-                ),
-                if (_searchTerm.isNotEmpty)
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _searchTerm = '';
-                        _showSuggestions = false;
+                        _updateSuggestions(value);
                       });
                     },
-                    icon: const Icon(
-                      Icons.close_rounded,
-                      color: Colors.black,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Buscar',
+                      hintStyle: TextStyle(color: Colors.grey),
                     ),
                   ),
-              ],
+                  if (_showSuggestions && _suggestions.isNotEmpty)
+                    Container(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      child: ListView.builder(
+                        itemCount: _suggestions.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(
+                              _suggestions[index],
+                              style: const TextStyle(color: Colors.blue),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                _searchTerm = _suggestions[index];
+                                _showSuggestions = false;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 8),
-          if (_showSuggestions)
-            Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListView.builder(
-                itemCount: _suggestions.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_suggestions[index]),
-                    onTap: () {
-                      setState(() {
-                        _searchTerm = _suggestions[index];
-                        _showSuggestions = false;
-                      });
-                    },
-                  );
-                },
-              ),
-            ),
         ],
       ),
     );

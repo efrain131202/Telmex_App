@@ -24,6 +24,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   List<String> _suggestions = [];
   bool _showSuggestions = false;
   final logger = Logger();
+  final List<int> _selectedColumns = [];
 
   @override
   void initState() {
@@ -119,6 +120,15 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   Widget _buildToolbar(List<List<dynamic>> currentSheet) {
     List<dynamic> firstColumnValues =
         currentSheet.map((row) => row[0] ?? '').toList();
+
+    List<String> columnHeaders = [];
+    if (_fixedRowIndex != null && _fixedRowIndex! < currentSheet.length) {
+      columnHeaders =
+          currentSheet[_fixedRowIndex!].map((cell) => cell.toString()).toList();
+    } else if (currentSheet.isNotEmpty) {
+      columnHeaders = currentSheet[0].map((cell) => cell.toString()).toList();
+    }
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -149,6 +159,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                     _selectedSheetIndex = value!;
                     _selectedRowIndex = null;
                     _fixedRowIndex = null;
+                    _selectedColumns.clear();
                   });
                 },
               ),
@@ -199,8 +210,33 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                 onChanged: (value) {
                   setState(() {
                     _fixedRowIndex = value;
+                    _selectedColumns.clear();
                   });
                 },
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Seleccionar columnas"),
+              Wrap(
+                children: List.generate(columnHeaders.length, (index) {
+                  return ChoiceChip(
+                    label: Text(columnHeaders[index]),
+                    selected: _selectedColumns.contains(index),
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedColumns.add(index);
+                        } else {
+                          _selectedColumns.remove(index);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
               ),
             ],
           ),
@@ -312,11 +348,13 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
               for (int columnIndex = 0;
                   columnIndex < filteredRows[rowIndex].length;
                   columnIndex++)
-                TableCell(
-                  verticalAlignment: TableCellVerticalAlignment.middle,
-                  child:
-                      _buildReadOnlyCell(filteredRows, rowIndex, columnIndex),
-                ),
+                if (_selectedColumns.isEmpty ||
+                    _selectedColumns.contains(columnIndex))
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child:
+                        _buildReadOnlyCell(filteredRows, rowIndex, columnIndex),
+                  ),
             ],
           ),
       ],

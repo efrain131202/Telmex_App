@@ -16,6 +16,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
     with SingleTickerProviderStateMixin {
   int _selectedSheetIndex = 0;
   int? _selectedRowIndex;
+  int? _fixedRowIndex;
   final double _scale = 1.0;
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -147,6 +148,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                   setState(() {
                     _selectedSheetIndex = value!;
                     _selectedRowIndex = null;
+                    _fixedRowIndex = null;
                   });
                 },
               ),
@@ -172,6 +174,31 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
                 onChanged: (value) {
                   setState(() {
                     _selectedRowIndex = value;
+                  });
+                },
+              ),
+              DropdownButton<int?>(
+                value: _fixedRowIndex,
+                hint: const Text('Seleccionar fila fijada'),
+                items: [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text('Ninguna fila fijada'),
+                  ),
+                  for (int index = 0; index < currentSheet.length; index++)
+                    DropdownMenuItem(
+                      value: index,
+                      child: Text(
+                        currentSheet[index][0].toString().length > 10
+                            ? '${currentSheet[index][0].toString().substring(0, 10)}...'
+                            : currentSheet[index][0].toString(),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _fixedRowIndex = value;
                   });
                 },
               ),
@@ -246,11 +273,13 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
   Widget _buildTable(BuildContext context, List<List<dynamic>> sheet) {
     List<List<dynamic>> filteredRows = [];
 
+    if (_fixedRowIndex != null) {
+      filteredRows.add(sheet[_fixedRowIndex!]);
+    }
+
     if (_selectedRowIndex != null) {
-      filteredRows.add(sheet[0]);
       filteredRows.add(sheet[_selectedRowIndex!]);
     } else {
-      filteredRows.add(sheet[0]);
       filteredRows.addAll(sheet.where((row) {
         for (var cell in row) {
           if (cell != null && cell.toString().contains(_searchTerm)) {
@@ -272,7 +301,7 @@ class _ExcelDataViewerState extends State<ExcelDataViewer>
         for (int rowIndex = 0; rowIndex < filteredRows.length; rowIndex++)
           TableRow(
             decoration: BoxDecoration(
-              color: rowIndex == 0
+              color: rowIndex == 0 && _fixedRowIndex != null
                   ? Colors.blue
                   : (rowIndex % 2 == 0 ? Colors.grey.shade200 : Colors.white),
               border: Border.all(

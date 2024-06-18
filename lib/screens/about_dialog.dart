@@ -68,39 +68,30 @@ class AboutDialogScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            const Text(
-              'Desarrollado por Efrain Cruz Lobato',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildSocialIcon(
-                  icon: FontAwesomeIcons.squareInstagram,
-                  color: Colors.pink,
-                  onPressed: () => _launchURL(
-                      'https://instagram.com/efraincruzlobato._.13?igshid=ZDdkNTZiNTM='),
-                ),
-                const SizedBox(width: 24),
-                _buildSocialIcon(
                   icon: FontAwesomeIcons.squareGithub,
                   color: Colors.black,
-                  onPressed: () =>
-                      _launchURL('https://github.com/efrain131202'),
-                ),
-                const SizedBox(width: 24),
-                _buildSocialIcon(
-                  icon: FontAwesomeIcons.squareFacebook,
-                  color: Colors.blueAccent,
                   onPressed: () => _launchURL(
-                      'https://www.facebook.com/efrain.cruzlobato.9'),
+                      'https://github.com/efrain131202/Telmex_App.git'),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'El código fuente de esta aplicación se encuentra disponible en GitHub.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Desarrollado con Flutter',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
